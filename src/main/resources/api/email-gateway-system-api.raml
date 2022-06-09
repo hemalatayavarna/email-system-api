@@ -1,0 +1,33 @@
+#%RAML 1.0
+title: Email Gateway System API
+version: v1
+protocols: [HTTP, HTTPS]
+mediaType: application/json
+
+types:
+  Message: !include data-types/message.raml
+  
+/health:
+  get:
+    displayName: Get Health
+    description: Return message to indicate the system health status
+    
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include examples/health-example.json
+            
+/messages:
+  post:
+    displayName: message
+    description: Email endpoint to send the actual email.
+    body:
+      type: Message
+      example: !include /examples/email-send-request.json
+    responses:
+      200:
+        description: returns the notification status
+        body:
+          examples:
+            SUCCESS : !include examples/email-send-success-response.json

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="a0badfb7-2f6b-4016-b87a-8e8f80913023" >
+        <email:smtps-connection host="${email.gateway.host}" user="${email.gateway.username}" password="${secure::email.gateway.password}" port="${email.gateway.port}">
+            <tls:context >
+                <tls:trust-store insecure="true" />
+            </tls:context>
+        </email:smtps-connection>
+    </email:smtp-config>
+	<email:smtp-config name="Email_SMTP_O365" doc:name="Email SMTP" doc:id="5aadf14f-578f-4b61-9c8e-5be16b3f28a8" >
+		<email:smtp-connection host="${email.gateway.host}" user="${email.gateway.username}" password="${secure::email.gateway.password}" port="${email.gateway.port}" connectionTimeout="${mail.connection.timeout}" readTimeout="${mail.read.timeout}" writeTimeout="${mail.write.timeout}">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+				<email:property key="mail.debug" value="${mail.debug}" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<http:listener-config name="email-gateway-system-api-httpListenerConfig">
+        <http:listener-connection host="${http.private.host}" port="${http.private.port}" connectionIdleTimeout="${http.connection.idle.timeout}"/>
+    </http:listener-config>
+    <apikit:config name="email-gateway-system-api-config" api="email-gateway-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+		<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="55d4d393-9223-4eb9-9775-6c728b1fbb2d" file="config/app-config-${env}.properties" key="${secure.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="6f0388fb-a5d7-4e64-a900-11a93f3d97c8" file="config/app-config-${env}.properties" />
+	<configuration-properties doc:name="Configuration properties" doc:id="77c3dde7-661a-4c49-960b-dea448c7492c" file="config/app-config-global.properties" />
+	<email:smtp-config name="Email_SMTP_D4E" doc:name="Email SMTP" doc:id="eeeeb1ef-ee9b-4668-8486-420b74a24501" >
+		<email:smtp-connection host="${email.gateway.d4e.host}" port="${email.gateway.d4e.port}"/>
+	</email:smtp-config>
+</mule>

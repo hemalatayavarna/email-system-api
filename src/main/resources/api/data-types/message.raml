@@ -1,0 +1,38 @@
+#%RAML 1.0 DataType
+description: Email Message
+displayName: Email Message
+
+type: object
+properties:
+  senderAddress?:
+    type: string
+    description: The Sender Address of the Email. If senderAddress is not supplied, the default senderAddress will be used.
+  recipientAddresses:
+    type: string[]
+    description: The Recipient Addresses of the Email
+  ccAddresses?:
+    type: string[]
+    description: The Carbon Copy Recipient Addresses of the Email
+  bccAddresses?:
+    type: string[]
+    description: The Blind Carbon Copy Recipient Addresses of the Email
+  subject?:
+    type: string
+    description: The Subject of the Email
+  message?:
+    type: string
+    description: The Message of the Email
+  attachment?:
+    type: object[]
+    items:
+      type: object
+      properties:
+        attachmentName:
+          type: string
+          description: Filename of the Attachement
+        attachmentType?:
+          type: string
+          description: File type of the Attachement
+        attachment:
+          type: string
+          description: File contents in Base64 encoding

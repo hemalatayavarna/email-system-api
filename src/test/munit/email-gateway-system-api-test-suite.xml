@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="impl-email-process-test-suite.xml" />
+	<munit:test name="impl-email-process-test-suite-impl-email-process:post-email:subflowTest" doc:id="52678271-a035-40a2-96bf-7c838a1f36d0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Send Email" doc:id="aa9892d1-e7e1-47f1-96f6-a80016aa34ea" processor="email:send">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Send Email" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set payload" doc:id="0f54b62a-6a23-4c1b-aceb-eb4236857ca6" >
+				<munit:payload value="#[MunitTools::getResourceAsString('examples/email-send-request.json')]" mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to impl-email-process:post-email:subflow" doc:id="b248a1a6-16bc-4209-956c-20fef4cf0923" name="post:\messages:application\json:email-gateway-system-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="6891d35c-d350-427b-902f-0ff2dc559b85" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a83909a7-594f-476c-8448-e242012d3977" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="a898c809-28e4-4f59-a2d2-a02c09581eab" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="impl-email-process-test-suite-impl-email-process:get-health-report:subflowTest" doc:id="6a56a282-d4ad-49e1-a621-e1ac2599212b" description="Test">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Mock Send Email" doc:id="4d89e7be-b22f-4a40-98b0-dde30eb1ff3d" processor="email:send">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Send Email" attributeName="doc:name" />
+					</munit-tools:with-attributes>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<flow-ref doc:name="Flow-ref to impl-email-process:post-email:subflow" doc:id="e2ade747-731a-4de4-9c6a-00fb828bd964" name="get:\health:email-gateway-system-api-config" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:verify-call doc:name="Verify Call to Health Transformation" doc:id="bd7e11f9-4d9a-447b-a8e1-e1097a370ac1" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get Health Report" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				</munit-tools:verify-call>
+				<munit-tools:assert-that doc:name="Assert that Payload is not null" doc:id="286696bb-2e70-47f9-8d41-da067a6c0af6" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+			</munit:validation>
+		</munit:test>
+
+
+</mule>

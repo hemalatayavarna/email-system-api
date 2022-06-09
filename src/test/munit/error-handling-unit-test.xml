@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="error-handling-unit-test.xml" />
+	<global-property doc:name="Global Property" doc:id="f446446e-ca9b-4548-9a3a-7d3f68b11694" name="mule.env" value="dev" />
+	<global-property doc:name="Global Property" doc:id="736f74bd-6857-46ca-8ccd-7acee86e1f43" name="secure.key" value="OpAIwM#QkR@wl2iz" />
+	<flow name="error-handling-unit-test:wrapper:flow" doc:id="c1d5ad5f-0fa6-48a7-8d5f-93194fbcd4d8" >
+		<flow-ref doc:name="email-gateway-system-api-main" doc:id="27459bad-8912-4bfd-ae3e-b115e3e626a5" name="email-gateway-system-api-main"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b7c8c398-a274-449e-9c14-d6783d5c7bfe" >
+				<logger level="DEBUG" doc:name="Log Exception handled continue to Assert" doc:id="233d6989-d408-4c2e-8a11-e5ab7c3c8b11" message="Exception Handled"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>	
+	<munit:test name="error-handling-unit-test:bad-request:test" description="MUnit Test" doc:id="7de4ac40-e100-49e7-8d2d-d25ac47440ab" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock API Kit Return APIKIT:BAD_REQUEST" doc:id="e38bac76-30f4-4955-8622-58d59c5a09e3" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="email-gateway-system-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="error-handling-unit-test:wrapper:flow" doc:id="defc821c-9f32-4625-8a22-2ca1e336d896" name="error-handling-unit-test:wrapper:flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 400" doc:id="a51a71d0-5ed5-4f9c-ab8a-69b4fb22bdc7" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(400)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call to Log Bad Request Error" doc:id="b849b240-2757-4637-9a4b-0e0fd8db4db7" processor="mule:logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Log Bad Request Error" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>	
+	<munit:test name="error-handling-unit-test:not-found:test" description="MUnit Test" doc:id="f2171b1c-674f-46bf-bd30-5e613c253f8a" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock API Kit Return APIKIT:NOT_FOUND" doc:id="964891ca-7458-45ca-ad44-00e3bfccd736" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="email-gateway-system-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="error-handling-unit-test:wrapper:flow" doc:id="f90470b4-5d95-44eb-94bc-19b1b90a2aa0" name="error-handling-unit-test:wrapper:flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 404" doc:id="62b58747-5031-4913-97c5-8d181f8ed966" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(404)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call to Log Not Found Error" doc:id="cc2e55c3-1101-4072-a005-92bd6c4a5e56" processor="mule:logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Log Not Found Error" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>	
+	<munit:test name="error-handling-unit-test:method-not-allowed:test" description="MUnit Test" doc:id="5bca1488-6fdf-428c-8e1c-58ea45e1b7cd" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock API Kit Return APIKIT:METHOD_NOT_ALLOWED" doc:id="29553aae-6516-4873-a144-f268eb4f4160" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="email-gateway-system-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="error-handling-unit-test:wrapper:flow" doc:id="6b32ce55-183c-4075-b725-d7e70110ae50" name="error-handling-unit-test:wrapper:flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 405" doc:id="a9be6f9b-6abc-4a64-9daa-50b53862f29e" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(405)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call to Log Method Not Allowed Error" doc:id="8be3fe89-8eef-4c16-a861-9b7d9a2f88be" processor="mule:logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Log Method Not Allowed Error" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>	
+	<munit:test name="error-handling-unit-test:not-acceptable:test" description="MUnit Test" doc:id="c3b4cd26-c182-4ee3-9c53-b08a6671f6c9" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock API Kit Return APIKIT:NOT_ACCEPTABLE" doc:id="1879ac1f-d9dc-463b-9428-8722439739f5" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="email-gateway-system-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="error-handling-unit-test:wrapper:flow" doc:id="3af5efca-a090-43d6-b4c8-2f2299639219" name="error-handling-unit-test:wrapper:flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 406" doc:id="7efe4112-362a-4281-8a9f-9dda1ebc7efc" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(406)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call to Log Not Acceptable Error" doc:id="76f27c67-7ac2-4abc-a5d3-1d541f2c911e" processor="mule:logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Log Not Acceptable Error" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>	
+	<munit:test name="error-handling-unit-test:unsupported-media-type:test" description="MUnit Test" doc:id="59004921-8c6e-4f68-89ca-de3ac1965deb" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock API Kit Return APIKIT:UNSUPPORTED_MEDIA_TYPE" doc:id="18f880aa-4d02-4f62-a72e-0cef212e628e" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="email-gateway-system-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="error-handling-unit-test:wrapper:flow" doc:id="e9546ee2-25d0-4151-afa2-efa7f8c00027" name="error-handling-unit-test:wrapper:flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 415" doc:id="cf792d34-d000-4db2-90f0-59ec8c08e536" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(415)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call to Log Unsupported Media Type Error" doc:id="c58905ca-f728-4927-a065-8a4a8aff1cd0" processor="mule:logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Log Unsupported Media Type Error" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>	
+	<munit:test name="error-handling-unit-test:not-implemented:test" description="MUnit Test" doc:id="4e22ef58-5895-42a1-8dfa-dc8259c45333" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock API Kit Return APIKIT:NOT_IMPLEMENTED" doc:id="611a7564-139a-4aff-b6b8-c3ad77e0df0d" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="email-gateway-system-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="error-handling-unit-test:wrapper:flow" doc:id="994281ac-dfa5-40a8-b9b7-ec4050c5d0f7" name="error-handling-unit-test:wrapper:flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 501" doc:id="28912940-5996-4b91-9577-0ac28c478705" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(501)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call to Log Not Implemented Error" doc:id="345bdad9-c7f8-40eb-86f1-cdb06837e692" processor="mule:logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Log Not Implemented Error" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="error-handling-unit-test:any:test" description="MUnit Test" doc:id="4b8a6790-12c0-45cb-8968-383809157559" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock API Kit Return ANY" doc:id="0cac6a30-7e78-4a9a-b0af-4ec0676698cb" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="email-gateway-system-api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="error-handling-unit-test:wrapper:flow" doc:id="244c7167-df85-4d8a-bf3b-c19681557713" name="error-handling-unit-test:wrapper:flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 500" doc:id="33db2ceb-203e-4117-8240-7f8d495b7837" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(500)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call to Log Unhandled Error" doc:id="b3c89535-57ad-4e34-b23d-e6b0d263715d" processor="mule:logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:name" whereValue="Log Unhandled Error" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>	
+	<munit:test name="error-handling-unit-test:mule-expression-error:test" description="MUnit Test" doc:id="5da419da-baec-48a1-b019-0dad45689c21" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock flow ref impl-email-process:post-email:subflow" doc:id="398d076c-9db3-4c8b-957a-c531f855a3cb" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="impl-email-process:post-email:subflow" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="impl-email-process:post-email:subflow" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MULE:EXPRESSION" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="post:\messages:application\json:email-gateway-system-api-config" doc:id="5b80d6cf-387e-43e9-9d5f-9ff3ea0ffac5" name="post:\messages:application\json:email-gateway-system-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 400" doc:id="a2341a02-4370-4b7c-9b5f-c9ed554c3ebc" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(400)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call to Log Expression Error" doc:id="79803b49-a8b4-4a00-975c-8078d9f65871" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Expression Error Message" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>	
+	<munit:test name="error-handling-unit-test:generic-error:test" description="MUnit Test" doc:id="c74a4cb2-3fde-4fba-a014-ffd9c1454a17" tags="unit">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock flow ref impl-email-process:post-email:subflow" doc:id="3b3d5a03-1a9b-40a4-9c6b-ab6ae2e1c82c" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="impl-email-process:post-email:subflow" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="impl-email-process:post-email:subflow" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="post:\messages:application\json:email-gateway-system-api-config" doc:id="c38dde87-623d-4f9c-afc0-2843628ec75f" name="post:\messages:application\json:email-gateway-system-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that HTTP Status is 500" doc:id="d1515a32-2542-4c42-a080-9e08b3e06a26" expression="#[vars.httpStatus]" is='#[MunitTools::equalTo(500)]' message="The HTTP Status is not Correct"/>
+			<munit-tools:verify-call doc:name="Verify call Log Generic Error Message" doc:id="e203bf42-bf03-478a-a3c9-3dc5fa10f7cf" processor="logger">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Log Generic Error Message" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+</mule>

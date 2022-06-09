@@ -1,0 +1,21 @@
+{
+  "senderAddress": "hemalatayavarna@gmail.com",
+  "recipientAddresses": [
+    "hemalata@pernix.com.au"
+    ],
+    "ccAddresses": [
+        "hemalata@pernix.com.au"
+    ],
+    "bccAddresses": [
+        "hemalatayavarna@gmail.com"
+    ],
+  "subject": "Trail Balance Error",
+  "message": "Test Message for testing Board API",
+  "attachment": [
+    {
+      "attachmentName": "Error_TrailBalance_121121_033907.csv.zip",
+      "attachmentType": "zip",
+      "attachment": "U2wgTm8JRXJyb3JDb2RlCURlc2NyaXB0aW9uDQoxCQk0MDAJCQlBbiBlcnJvciBvY2N1cmVkIGJlY2F1c2Ugb2YgYmFkIHJlcXVlc3Q="
+    }
+  ]
+}

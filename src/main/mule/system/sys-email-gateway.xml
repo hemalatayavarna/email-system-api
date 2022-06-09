@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<sub-flow name="sys-email-gateway:post-email:subflow" doc:id="4d509d6a-07c4-4640-a07e-2c54df2e7561" >
+		<logger level="INFO" doc:name="Log START Email system call" doc:id="a5cb0f59-7e6b-45a7-b81b-febcd877200e" message="START Email system call"/>
+		<email:send doc:id="8499a326-02b9-43b7-a7b2-8a5be958b3f6" doc:name="Send Email" fromAddress="#[vars.senderAddress]" toAddresses="#[vars.recipientAddresses]" ccAddresses="#[vars.ccAddresses]" bccAddresses="#[vars.bccAddresses]" subject="#[vars.emailSubject]" config-ref="Email_SMTP_D4E">
+			<email:body >
+				<email:content ><![CDATA[#[vars.emailMessage]]]></email:content>
+			</email:body>
+			<email:attachments ><![CDATA[#[vars.attachments]]]></email:attachments>
+		</email:send>
+		<logger level="INFO" doc:name="Log END Email system call" doc:id="f6c72390-456c-40ba-8eb1-f33547b2cbe3" message="END Email system call" />
+	</sub-flow>
+</mule>

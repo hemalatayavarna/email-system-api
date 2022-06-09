@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule
+	xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd">
+	<error-handler name="api-kit-error-handler">
+		<on-error-propagate type="APIKIT:BAD_REQUEST"
+			enableNotifications="true" logException="true">
+			<ee:transform
+				xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+				xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+				doc:id="b794a8c6-c2e7-4763-9fe4-748bfe82b4ec"
+				doc:name="Set Bad Request Error Message Payload">
+				<ee:message>
+					<ee:set-payload resource="dwl/error-400.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Bad Request Error"
+				doc:id="6b5838c9-2f82-4082-bfab-26a988cb417b"
+				message="Propagate Error: #[payload]" />
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:NOT_FOUND"
+			enableNotifications="true" logException="true">
+			<ee:transform
+				xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+				xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+				doc:id="fa7a9cc0-794d-45b2-b0ab-345826cfaa38"
+				doc:name="Set Resource Not Found Error Message Payload">
+				<ee:message>
+					<ee:set-payload resource="dwl/error-404.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Not Found Error"
+				doc:id="620077eb-60d0-4ac4-9c66-418ab90262b7"
+				message="Propagate Error: #[payload]" />
+		</on-error-propagate>
+		<on-error-propagate
+			type="APIKIT:METHOD_NOT_ALLOWED" enableNotifications="true"
+			logException="true">
+			<ee:transform
+				xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+				xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+				doc:id="f9d049d8-d688-4f41-8e7f-58798fd64006"
+				doc:name="Set Method Not Allowed Error Message Payload">
+				<ee:message>
+					<ee:set-payload resource="dwl/error-405.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Method Not Allowed Error"
+				doc:id="01641cbb-7bf7-4074-9a97-071dc5d421fa"
+				message="Propagate Error: #[payload]" />
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:NOT_ACCEPTABLE"
+			enableNotifications="true" logException="true">
+			<ee:transform
+				xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+				xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+				doc:id="db7d0ec7-8cc2-4388-95e2-6b386e3d873e"
+				doc:name="Set Not Acceptable Error Message Payload">
+				<ee:message>
+					<ee:set-payload resource="dwl/error-406.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[406]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Not Acceptable Error"
+				doc:id="3a6886ef-4e8c-488e-9710-208eddf0f09d"
+				message="Propagate Error: #[payload]" />
+		</on-error-propagate>
+		<on-error-propagate
+			type="APIKIT:UNSUPPORTED_MEDIA_TYPE" enableNotifications="true"
+			logException="true">
+			<ee:transform
+				xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+				xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+				doc:id="e87d30b2-e0d4-43e3-a1e6-5bd4f04855d3"
+				doc:name="Set Unsupported Media Type Error Message Payload">
+				<ee:message>
+					<ee:set-payload resource="dwl/error-415.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR"
+				doc:name="Log Unsupported Media Type Error"
+				doc:id="c9d5ca9c-8c7c-40d6-af02-19d208371354"
+				message="Propagate Error: #[payload]" />
+		</on-error-propagate>
+		<on-error-propagate type="APIKIT:NOT_IMPLEMENTED"
+			enableNotifications="true" logException="true">
+			<ee:transform
+				xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+				xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd"
+				doc:id="13bb1cfa-04af-4bd3-a526-2fe0f29696ca"
+				doc:name="Set Not Implemented Error Message Payload">
+				<ee:message>
+					<ee:set-payload resource="dwl/error-501.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Not Implemented Error"
+				doc:id="f1e8bf53-5a49-4e35-bd2e-cda011e6216c"
+				message="Propagate Error: #[payload]" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true"
+			logException="true" doc:name="On Error Propagate"
+			doc:id="ebe87f40-9505-49e2-93e4-caf7edea2951">
+			<ee:transform
+				doc:name="Set Internal Server Error Message"
+				doc:id="b4d4cb53-9801-4414-9bbd-d6b2e9ed5f80"
+				xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+				<ee:message>
+					<ee:set-payload resource="dwl/error-500.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Unhandled Error"
+				doc:id="bd5be709-2b18-41d4-a944-de23973c5140"
+				message="Propagate Error: #[payload]" />
+		</on-error-propagate>
+	</error-handler>
+
+	<error-handler name="business-error-handler"
+		doc:id="018c8142-eece-4e2f-8485-b03fbc48dbe6">
+		<on-error-continue enableNotifications="true"
+			logException="true" doc:name="On Error Continue"
+			doc:id="26a3130b-3c62-4618-871d-f6b217689034" type="MULE:EXPRESSION">
+			<ee:transform
+				doc:name="Set Transform Mule Expression Error"
+				doc:id="c4a2bf36-411a-4fed-a0bc-73a53e820d7d">
+				<ee:message>
+					<ee:set-payload resource="dwl/business-error.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Expression Error Message"
+				doc:id="af7aa5d0-f6fb-470c-a4e9-51724e9ed46c"
+				message="Propagate Error: #[payload]" />
+		</on-error-continue>
+		<on-error-continue enableNotifications="true"
+			logException="true" doc:name="On Error Continue"
+			doc:id="f93d231e-d90f-4e86-9040-8c70ee6091b2" type="ANY">
+			<ee:transform
+				doc:name="Set Internal Server Error Message"
+				doc:id="e1044913-6a84-4f00-ada1-55935dc7e3e0"
+				xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+				<ee:message>
+					<ee:set-payload resource="dwl/business-error.dwl"/>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[output application/json
+---
+error.muleMessage.attributes.StatusCode default 500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="ERROR" doc:name="Log Generic Error Message"
+				doc:id="60258a68-4dbf-4f1e-b69d-c5a50e8ee815"
+				message="Propagate Error: #[payload]" />
+		</on-error-continue>
+	</error-handler>
+</mule>

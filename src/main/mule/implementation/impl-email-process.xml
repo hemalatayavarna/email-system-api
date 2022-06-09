@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="impl-email-process:post-email:subflow" doc:id="e94af4ac-05b3-4d1e-9c64-f0baea799788" >
+		<logger level="INFO" doc:name="Log START Impl Post Email" doc:id="f49fd3eb-96f6-4ca0-a9f5-bfb18dfd981e" message="START Impl Post Email"/>
+		<logger level="INFO" doc:name="Log senderAddress" doc:id="993135ba-f148-4b0c-a97e-45842d4f7937" message='#["Payload senderAddress is set to = " ++ (payload.senderAddress default "null")]'/>
+		<ee:transform doc:name="Set senderAddress, emailSubject, recipientAddresses, ccAddressess, bccAddresses, emailMessage vars" doc:id="8edc770f-0cae-4da0-be8d-591ee979f941" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="senderAddress" ><![CDATA[%dw 2.0
+output application/java
+---
+if (!isEmpty(payload.senderAddress))
+	payload.senderAddress as String
+else
+	p('email.gateway.username')]]></ee:set-variable>
+				<ee:set-variable variableName="emailSubject" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.subject]]></ee:set-variable>
+				<ee:set-variable variableName="recipientAddresses" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.recipientAddresses]]></ee:set-variable>
+				<ee:set-variable variableName="ccAddresses" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.ccAddresses]]></ee:set-variable>
+				<ee:set-variable variableName="bccAddresses" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.bccAddresses]]></ee:set-variable>
+				<ee:set-variable variableName="emailMessage" ><![CDATA[%dw 2.0
+output text/plain
+---
+payload.message]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Route 1: !isEmpty(payload.attachment) and sizeOf(payload.attachment) &gt; 0" doc:id="286e7f3b-23cd-4856-bc30-ee86ff2e4e49" >
+			<when expression="#[!isEmpty(payload.attachment) and sizeOf(payload.attachment) &gt; 0]">
+				<ee:transform doc:name="Set variable attachments" doc:id="0d2db0dd-5c27-4b0a-8259-427d5e6c3560" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="attachments" ><![CDATA[%dw 2.0
+import fromBase64 from dw::core::Binaries
+output application/java
+// grab the attachments and decode the contents from base 64
+var firstPass = payload.attachment map (item, index) -> {
+    (item.attachmentName) : fromBase64(item.attachment)
+}
+var secondPass = firstPass reduce ((detail, obj={}) ->
+  obj ++ detail
+)
+---
+secondPass]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="No attachments" doc:id="2a04e885-e9bd-4f56-b949-ca6b32d1ea53" message="No attachments"/>
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="sys-email-gateway:post-email:subflow" doc:id="21c7542d-1244-43d7-909b-b7f8607aff2b" name="sys-email-gateway:post-email:subflow"/>
+		<ee:transform doc:name="Set response message" doc:id="8f43e964-09c3-4bf7-a9c9-be6e0b2057b7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Email has been accepted by SMTP successfully",
+  correlationId: correlationId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log END Impl Post Email" doc:id="a83909a7-594f-476c-8448-e242012d3977" message="END Impl Post Email"/>
+	</sub-flow>
+</mule>
